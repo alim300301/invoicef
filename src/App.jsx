@@ -847,12 +847,12 @@ export default function App() {
                 CV ACS MULTI TECHNOLOGY
               </div>
 
-              {/* <div className="no-print" style={{ marginTop: '5px' }}>
+              <div className="no-print" style={{ marginTop: '5px' }}>
                 <label className="upload-label">
                   <Upload size={14} /> Ganti Logo Manually
                   <input type="file" accept="image/*" onChange={handleLogoUpload} style={{ display: 'none' }} />
                 </label>
-              </div> */}
+              </div>
             </div>
 
             <div className="invoice-header-info">
