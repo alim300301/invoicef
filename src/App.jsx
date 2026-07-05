@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Plus, Trash2, Printer, FileText, Upload, Building2, Check, X } from 'lucide-react';
 
 export default function App() {
-  const [logo, setLogo] = useState('/src/logo.png'); // Mengarahkan logo default ke /src/logo.png
+  const [logo, setLogo] = useState('../public/logo.png'); // Mengarahkan logo default ke /src/logo.png
   const [isPaid, setIsPaid] = useState(false); // Status Lunas/Belum Lunas untuk Watermark
   const [showPrintModal, setShowPrintModal] = useState(false); // Pop-up sebelum print
   const [discountValue, setDiscountValue] = useState(0); // State Diskon Global dalam nominal Rupiah (Rp)
@@ -1229,7 +1229,7 @@ export default function App() {
               {/* Gambar Tanda Tangan Diarahkan ke src/ttd.png dengan fallback SVG jika file fisik belum ditaruh */}
               <div className="signature-image-container">
                 <img
-                  src="/src/ttd.png"
+                  src="../public/ttd.png"
                   alt="Tanda Tangan Mohammad Munir"
                   className="signature-graphic-file"
                   onError={(e) => {
