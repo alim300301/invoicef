@@ -425,7 +425,7 @@ export default function App() {
           .col-no { width: 4%; text-align: center; }
           .col-desc { width: 42%; }
           .col-uprice { width: 14%; text-align: right; }
-          .col-qty { width: 10%; text-align: center; }
+          .col-qty { width: 6%; text-align: center; }
           .col-net { width: 13%; text-align: right; }
           .col-trate { width: 8%; text-align: center; }
           .col-tamount { width: 12%; text-align: right; }
