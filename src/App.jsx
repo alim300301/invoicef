@@ -1240,7 +1240,7 @@ export default function App() {
                   }}
                 />
 
-                Grafis SVG cadangan tanda tangan Munir
+                {/* Grafis SVG cadangan tanda tangan Munir */}
                 {/* <svg id="signature-fallback-svg" viewBox="0 0 300 120" className="signature-svg-graphic" style={{ width: '200px', display: 'none' }}>
                   <path
                     d="M 40,75 
