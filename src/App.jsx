@@ -197,9 +197,22 @@ export default function App() {
   const triggerPrint = (paidStatus) => {
     setIsPaid(paidStatus);
     setShowPrintModal(false);
+
+    // 1. Simpan judul halaman asli terlebih dahulu
+    const originalTitle = document.title;
+
+    // 2. Bersihkan nomor invoice dari karakter yang dilarang pada nama file (seperti / menjadi -)
+    const sanitizedInvoiceNumber = invoiceData.invoiceNumber.replace(/\//g, '-');
+
+    // 3. Ubah judul halaman menjadi nomor invoice
+    document.title = sanitizedInvoiceNumber;
+
     // Berikan sedikit waktu agar state re-render dan watermark muncul sebelum jendela cetak terbuka
     setTimeout(() => {
       window.print();
+
+      // 4. Kembalikan judul halaman ke aslinya setelah jendela print terbuka/ditutup
+      document.title = originalTitle;
     }, 150);
   };
 
