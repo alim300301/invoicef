@@ -1331,7 +1331,7 @@ export default function App() {
                 <li><strong>BRI:</strong> 612001021425536</li>
                 <li><strong>Mandiri:</strong> 1430030731481</li>
                 <li><strong>BCA:</strong> 2631302736</li>
-                <li>a.n. <strong>MOHAMMAD MUNIR</strong></li>
+                <li>Atas Nama <strong>MOHAMMAD MUNIR</strong></li>
               </ul>
             </div>
           </div>
