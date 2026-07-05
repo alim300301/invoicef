@@ -842,10 +842,10 @@ export default function App() {
                 }}
               />
 
-              {/* Teks logo cadangan yang hanya muncul jika logo.png tidak ditemukan */}
+              {/* Teks logo cadangan yang hanya muncul jika logo.png tidak ditemukan
               <div id="logo-fallback-text" style={{ display: 'none' }} className="company-text-fallback">
                 CV ACS MULTI TECHNOLOGY
-              </div>
+              </div> */}
 
               <div className="no-print" style={{ marginTop: '5px' }}>
                 <label className="upload-label">
@@ -1240,8 +1240,8 @@ export default function App() {
                   }}
                 />
 
-                {/* Grafis SVG cadangan tanda tangan Munir */}
-                <svg id="signature-fallback-svg" viewBox="0 0 300 120" className="signature-svg-graphic" style={{ width: '200px', display: 'none' }}>
+                Grafis SVG cadangan tanda tangan Munir
+                {/* <svg id="signature-fallback-svg" viewBox="0 0 300 120" className="signature-svg-graphic" style={{ width: '200px', display: 'none' }}>
                   <path
                     d="M 40,75 
                        C 35,65 52,38 65,42 
@@ -1263,7 +1263,7 @@ export default function App() {
                   />
                   <circle cx="230" cy="38" r="3.5" fill="#1a1a1a" />
                   <circle cx="242" cy="36" r="3.5" fill="#1a1a1a" />
-                </svg>
+                </svg> */}
               </div>
 
               <div>
