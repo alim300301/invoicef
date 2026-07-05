@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Plus, Trash2, Printer, FileText, Upload, Building2, Check, X } from 'lucide-react';
 
 export default function App() {
-  const [logo, setLogo] = useState('../public/logo.png'); // Mengarahkan logo default ke /src/logo.png
+  // PERBAIKAN: Menggunakan path absolut '/' untuk folder public di Netlify/Production
+  const [logo, setLogo] = useState('/logo.png');
   const [isPaid, setIsPaid] = useState(false); // Status Lunas/Belum Lunas untuk Watermark
   const [showPrintModal, setShowPrintModal] = useState(false); // Pop-up sebelum print
   const [discountValue, setDiscountValue] = useState(0); // State Diskon Global dalam nominal Rupiah (Rp)
@@ -835,17 +836,11 @@ export default function App() {
                 alt="Logo Perusahaan"
                 className="logo-preview"
                 onError={(e) => {
-                  // Jika gambar src/logo.png tidak ditemukan di build lokal, gunakan fallback teks bergaya logo
                   e.target.style.display = 'none';
                   const fallback = document.getElementById('logo-fallback-text');
                   if (fallback) fallback.style.display = 'block';
                 }}
               />
-
-              {/* Teks logo cadangan yang hanya muncul jika logo.png tidak ditemukan
-              <div id="logo-fallback-text" style={{ display: 'none' }} className="company-text-fallback">
-                CV ACS MULTI TECHNOLOGY
-              </div> */}
 
               <div className="no-print" style={{ marginTop: '5px' }}>
                 <label className="upload-label">
@@ -913,16 +908,6 @@ export default function App() {
                     placeholder="Email Penjual"
                   />
                 </div>
-                {/* <div className="meta-row">
-                  <span className="meta-label">NPWP:</span>
-                  <input
-                    type="text"
-                    name="sellerNPWP"
-                    value={invoiceData.sellerNPWP}
-                    onChange={handleInvoiceChange}
-                    placeholder="NPWP Penjual"
-                  />
-                </div> */}
               </div>
             </div>
 
@@ -1096,7 +1081,7 @@ export default function App() {
                   </tr>
                 ))}
 
-                {/* Baris Total di dalam tabel (Penerapan Diskon Sebelum Pajak & Nominal Rupiah) */}
+                {/* Baris Total di dalam tabel */}
                 <tr style={{ fontWeight: 'bold', borderTop: '1.5px solid #111827' }}>
                   <td colSpan="2" className="cell-center" style={{ padding: '6px 0' }}>SUBTOTAL:</td>
                   <td></td>
@@ -1226,44 +1211,18 @@ export default function App() {
                 <div style={{ fontWeight: 'bold', marginTop: '3px', color: '#0d9488' }}>{invoiceData.sellerName || 'CV ACS MULTI TECHNOLOGY'}</div>
               </div>
 
-              {/* Gambar Tanda Tangan Diarahkan ke src/ttd.png dengan fallback SVG jika file fisik belum ditaruh */}
+              {/* PERBAIKAN: Menggunakan path absolut '/ttd.png' */}
               <div className="signature-image-container">
                 <img
-                  src="../public/ttd.png"
+                  src="/ttd.png"
                   alt="Tanda Tangan Mohammad Munir"
                   className="signature-graphic-file"
                   onError={(e) => {
-                    // Jika ttd.png tidak ditemukan, tampilkan cadangan grafis inline SVG signature
                     e.target.style.display = 'none';
                     const fallbackSvg = document.getElementById('signature-fallback-svg');
                     if (fallbackSvg) fallbackSvg.style.display = 'block';
                   }}
                 />
-
-                {/* Grafis SVG cadangan tanda tangan Munir */}
-                {/* <svg id="signature-fallback-svg" viewBox="0 0 300 120" className="signature-svg-graphic" style={{ width: '200px', display: 'none' }}>
-                  <path
-                    d="M 40,75 
-                       C 35,65 52,38 65,42 
-                       C 78,46 45,102 52,105 
-                       C 60,108 95,78 115,62 
-                       C 135,46 160,50 162,58 
-                       C 164,66 142,88 152,82 
-                       C 162,76 172,62 185,55 
-                       C 198,48 215,50 215,58 
-                       C 215,64 195,72 210,68 
-                       C 225,64 245,55 260,50
-                       M 55,95 
-                       Q 160,82 270,55"
-                    fill="none"
-                    stroke="#1a1a1a"
-                    strokeWidth="3.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                  <circle cx="230" cy="38" r="3.5" fill="#1a1a1a" />
-                  <circle cx="242" cy="36" r="3.5" fill="#1a1a1a" />
-                </svg> */}
               </div>
 
               <div>
@@ -1319,12 +1278,6 @@ export default function App() {
                 <li>Ukuran kertas direkomendasikan <strong>A4</strong>.</li>
                 <li>Menghasilkan format **1 halaman penuh** tanpa terpotong.</li>
               </ul>
-
-              {/* <p><strong>Aset Gambar Lokal:</strong></p>
-              <ul style={{ paddingLeft: '12px', marginTop: '4px', marginBottom: '12px', listStyleType: 'square' }}>
-                <li>Logo default diarahkan ke <code>/src/logo.png</code></li>
-                <li>Tanda tangan diarahkan ke <code>/src/ttd.png</code></li>
-              </ul> */}
 
               <p><strong>Rincian Rekening:</strong></p>
               <ul style={{ paddingLeft: '12px', marginTop: '4px', marginBottom: '10px' }}>
