@@ -856,7 +856,7 @@ export default function App() {
             </div>
 
             <div className="invoice-header-info">
-              <div className="invoice-title">Invoice</div>
+              <div className="invoice-title">Invoice Bro</div>
               <div className="invoice-subtitle">(Asli untuk Penerima / Original for Recipient)</div>
 
               {/* Tanda status kecil di layar */}
