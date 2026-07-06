@@ -1,11 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Trash2, Printer, FileText, Upload, Building2, Check, X } from 'lucide-react';
+import { Plus, Trash2, Printer, Building2, Check, X } from 'lucide-react';
 
 export default function App() {
-  const [logo, setLogo] = useState('../public/logo.png'); // Mengarahkan logo default ke /src/logo.png
+  // Jalur diperbaiki langsung ke folder public agar logo tidak hilang/error membaca path
+  const [logo, setLogo] = useState('/logo.png');
   const [isPaid, setIsPaid] = useState(false); // Status Lunas/Belum Lunas untuk Watermark
   const [showPrintModal, setShowPrintModal] = useState(false); // Pop-up sebelum print
   const [discountValue, setDiscountValue] = useState(0); // State Diskon Global dalam nominal Rupiah (Rp)
+
+  // Mengubah judul tab browser aplikasi saat komponen dimuat
+  useEffect(() => {
+    document.title = "Invoice App ACS";
+  }, []);
 
   // Ambil tanggal hari ini secara otomatis
   const today = new Date();
@@ -165,17 +171,6 @@ export default function App() {
     }
   };
 
-  const handleLogoUpload = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setLogo(reader.result);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
   // Kalkulasi Pajak dan Total per baris item
   const calculatedItems = items.map(item => {
     const netAmount = item.quantity * item.price;
@@ -197,13 +192,14 @@ export default function App() {
     setIsPaid(paidStatus);
     setShowPrintModal(false);
 
+    // Ganti nama dokumen cetak ke nomor invoice supaya nama file simpan otomatis rapi
     const originalTitle = document.title;
     const sanitizedInvoiceNumber = invoiceData.invoiceNumber.replace(/\//g, '-');
     document.title = sanitizedInvoiceNumber;
 
     setTimeout(() => {
       window.print();
-      document.title = originalTitle;
+      document.title = "Invoice App ACS"; // Mengembalikan nama app setelah dialog cetak tertutup
     }, 150);
   };
 
@@ -325,21 +321,6 @@ export default function App() {
             max-height: 55px;
             max-width: 100%;
             object-fit: contain;
-          }
-          .upload-label {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            background-color: #f3f4f6;
-            padding: 5px 8px;
-            border-radius: 4px;
-            border: 1px dashed #9ca3af;
-            cursor: pointer;
-            font-size: 10.5px;
-            font-weight: 600;
-          }
-          .upload-label:hover {
-            background-color: #e5e7eb;
           }
 
           .invoice-header-info {
@@ -663,7 +644,7 @@ export default function App() {
             .bottom-section { grid-template-columns: 1fr; }
           }
 
-          /* === PRINT MODE STYLES (FfONT ISI TETAP BESAR) === */
+          /* === PRINT MODE STYLES (FONT ISI TETAP BESAR) === */
           @media print {
             @page { 
               size: landscape; 
@@ -848,12 +829,6 @@ export default function App() {
                   e.target.style.display = 'none';
                 }}
               />
-              <div className="no-print" style={{ marginTop: '5px' }}>
-                <label className="upload-label">
-                  <Upload size={14} /> Ganti Logo Manually
-                  <input type="file" accept="image/*" onChange={handleLogoUpload} style={{ display: 'none' }} />
-                </label>
-              </div>
             </div>
 
             <div className="invoice-header-info">
