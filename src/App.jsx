@@ -2,8 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Plus, Trash2, Printer, FileText, Upload, Building2, Check, X } from 'lucide-react';
 
 export default function App() {
-  // Menggunakan path absolut '/' untuk folder public di Netlify/Production
-  const [logo, setLogo] = useState('/logo.png');
+  const [logo, setLogo] = useState('../public/logo.png'); // Mengarahkan logo default ke /src/logo.png
   const [isPaid, setIsPaid] = useState(false); // Status Lunas/Belum Lunas untuk Watermark
   const [showPrintModal, setShowPrintModal] = useState(false); // Pop-up sebelum print
   const [discountValue, setDiscountValue] = useState(0); // State Diskon Global dalam nominal Rupiah (Rp)
@@ -143,7 +142,7 @@ export default function App() {
   const addItem = () => {
     setItems([
       ...items,
-      { id: Date.now(), name: '', price: 0, quantity: 1, taxRate: 0, taxType: 'PPN' }
+      { id: Date.now(), name: '', price: 0, quantity: 1, taxRate: 0, taxType: 'PPN' } // Default PPN 0% untuk item baru
     ]);
   };
 
@@ -177,6 +176,7 @@ export default function App() {
     }
   };
 
+  // Kalkulasi Pajak dan Total per baris item
   const calculatedItems = items.map(item => {
     const netAmount = item.quantity * item.price;
     const taxAmount = netAmount * (item.taxRate / 100);
@@ -196,14 +196,9 @@ export default function App() {
   const triggerPrint = (paidStatus) => {
     setIsPaid(paidStatus);
     setShowPrintModal(false);
-
-    const originalTitle = document.title;
-    const sanitizedInvoiceNumber = invoiceData.invoiceNumber.replace(/\//g, '-');
-    document.title = sanitizedInvoiceNumber;
-
+    // Berikan sedikit waktu agar state re-render dan watermark muncul sebelum jendela cetak terbuka
     setTimeout(() => {
       window.print();
-      document.title = originalTitle;
     }, 150);
   };
 
@@ -217,16 +212,27 @@ export default function App() {
             margin: 0;
             padding: 0;
           }
+          
+          /* MENGHILANGKAN TOMBOL SPIN ARROW DI INPUT NUMBER (Layar & Cetak) */
+          input[type=number]::-webkit-inner-spin-button, 
+          input[type=number]::-webkit-outer-spin-button { 
+            -webkit-appearance: none; 
+            margin: 0; 
+          }
+          input[type=number] { 
+            -moz-appearance: textfield; 
+          }
+
           .app-wrapper {
             background-color: #f3f4f6;
             min-height: 100vh;
             padding: 20px;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             color: #1f2937;
-            line-height: 1.3;
+            line-height: 1.35;
           }
           .container {
-            max-width: 1300px;
+            max-width: 1250px;
             margin: 0 auto;
             display: flex;
             gap: 20px;
@@ -242,7 +248,7 @@ export default function App() {
             padding: 30px;
             border: 1px solid #d1d5db;
             min-width: 60%;
-            position: relative;
+            position: relative; /* Untuk memposisikan watermark stempel */
             overflow: hidden;
           }
           .sidebar {
@@ -406,58 +412,45 @@ export default function App() {
           table {
             width: 100%;
             border-collapse: collapse;
-            table-layout: fixed;
+            font-size: 11px;
           }
           th {
-            border-top: 2px solid #111827;
-            border-bottom: 2px solid #111827;
-            padding: 12px 6px;
-            font-weight: 800;
+            border-top: 1.5px solid #111827;
+            border-bottom: 1.5px solid #111827;
+            padding: 6px 4px;
+            font-weight: bold;
             text-align: left;
             text-transform: uppercase;
-            color: #000;
-            font-size: 15px;
-            letter-spacing: 0.3px;
+            color: #374151;
+            font-size: 10px;
           }
           td {
-            padding: 12px 6px;
+            padding: 6px 4px;
             border-bottom: 1px dashed #e5e7eb;
-            vertical-align: middle;
-            font-size: 16px;
-            color: #000;
-            line-height: 1.4;
+            vertical-align: top;
           }
-          
-          table input {
-            font-size: 16px !important;
-            padding: 8px 6px;
-            margin-bottom: 0;
-            font-weight: inherit;
-          }
-          
           .cell-center { text-align: center; }
           .cell-right { text-align: right; }
           
-          .col-no { width: 5%; text-align: center; }
-          .col-desc { width: 38%; }
-          .col-uprice { width: 15%; text-align: right; }
-          .col-qty { width: 8%; text-align: center; }
-          .col-net { width: 14%; text-align: right; }
-          .col-trate { width: 7%; text-align: center; }
-          .col-tamount { width: 13%; text-align: right; }
-          .col-total { width: 14%; text-align: right; font-weight: bold; }
-          .col-act { width: 5%; text-align: center; }
+          .col-no { width: 4%; text-align: center; }
+          .col-desc { width: 42%; }
+          .col-uprice { width: 14%; text-align: right; }
+          .col-qty { width: 10%; text-align: center; }
+          .col-net { width: 13%; text-align: right; }
+          .col-trate { width: 8%; text-align: center; }
+          .col-tamount { width: 12%; text-align: right; }
+          .col-total { width: 12%; text-align: right; font-weight: bold; }
+          .col-act { width: 4%; text-align: center; }
 
-          /* === BAGIAN BAWAH (3 KOLOM BERDAMPINGAN) === */
+          /* === BAGIAN BAWAH: TRANSFER & TANDA TANGAN === */
           .bottom-section {
             display: grid;
-            grid-template-columns: 1fr 1fr 0.8fr; /* Pembagian rata 3 kolom */
+            grid-template-columns: 1.4fr 1fr;
             gap: 20px;
             margin-top: 12px;
             border-top: 1.5px solid #111827;
             padding-top: 12px;
             font-size: 11px;
-            align-items: flex-start;
           }
           .amount-words-box {
             background-color: #f9fafb;
@@ -492,7 +485,7 @@ export default function App() {
           }
           .bank-grid-header {
             display: grid;
-            grid-template-columns: 85px 1fr 30px;
+            grid-template-columns: 90px 1fr 30px;
             gap: 6px;
             font-weight: bold;
             font-size: 9.5px;
@@ -503,7 +496,7 @@ export default function App() {
           }
           .bank-row-item {
             display: grid;
-            grid-template-columns: 85px 1fr 30px;
+            grid-template-columns: 90px 1fr 30px;
             gap: 6px;
             align-items: center;
             margin-bottom: 3px;
@@ -513,37 +506,24 @@ export default function App() {
             padding: 2px 4px;
             font-size: 10.5px;
           }
-          
-          /* Blok Catatan Syarat & Ketentuan di Kolom Tengah */
-          .notes-column-box {
-            font-size: 11px;
-            background-color: #ffffff;
-            padding: 2px;
-          }
-          .notes-column-box textarea {
-            font-size: 11px;
-            margin-top: 4px;
-            line-height: 1.4;
-          }
-
           .signature-box {
             text-align: right;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
             height: 100%;
-            min-height: 175px;
+            min-height: 155px;
             position: relative;
           }
           .signature-image-container {
             display: flex;
             justify-content: flex-end;
             margin: 2px 0;
-            height: 95px; /* Sedikit disesuaikan agar proporsional */
+            height: 120px;
           }
           .signature-graphic-file {
             max-height: 100%;
-            max-width: 170px;
+            max-width: 200px;
             object-fit: contain;
           }
 
@@ -600,6 +580,7 @@ export default function App() {
             align-items: center;
             justify-content: center;
             gap: 8px;
+            transition: background 0.2s;
           }
           .btn-modal-paid:hover { background-color: #059669; }
           .btn-modal-unpaid {
@@ -615,6 +596,7 @@ export default function App() {
             align-items: center;
             justify-content: center;
             gap: 8px;
+            transition: background 0.2s;
           }
           .btn-modal-unpaid:hover { background-color: #d97706; }
           .btn-modal-cancel {
@@ -626,6 +608,7 @@ export default function App() {
             font-weight: 600;
             cursor: pointer;
             font-size: 13px;
+            transition: all 0.2s;
           }
           .btn-modal-cancel:hover { background-color: #e5e7eb; color: #1f2937; }
 
@@ -644,28 +627,28 @@ export default function App() {
             background: transparent;
             border-radius: 4px;
           }
-          .btn-icon-small:hover { background-color: #fecaca; }
+          .btn-icon-small:hover {
+            background-color: #fecaca;
+          }
 
+          /* === RESPONSIVE === */
           @media (max-width: 950px) {
             .container { flex-direction: column; }
             .invoice-main { min-width: 100%; padding: 20px; }
             .sidebar { width: 100%; }
-            .bottom-section { grid-template-columns: 1fr; }
           }
 
           /* === PRINT MODE STYLES === */
           @media print {
             @page { 
               size: landscape; 
-              margin: 0.3cm 0.4cm; 
+              margin: 0.35cm 0.5cm; 
             }
             body { 
               background: white; 
               margin: 0; 
               padding: 0; 
               font-size: 10.5px !important;
-              -webkit-print-color-adjust: exact;
-              print-color-adjust: exact;
             }
             .app-wrapper { 
               background: white; 
@@ -688,17 +671,29 @@ export default function App() {
               max-width: 100% !important;
             }
             
-            .brand-container { margin-bottom: 8px !important; }
-            .logo-preview { max-height: 48px !important; }
+            .brand-container {
+              margin-bottom: 8px !important;
+            }
+            .logo-preview {
+              max-height: 48px !important;
+            }
             
             .grid-info {
               gap: 12px !important;
               padding-top: 8px !important;
               margin-bottom: 8px !important;
             }
-            .address-block { font-size: 10.5px !important; }
-            .address-title { font-size: 9.5px !important; margin-bottom: 2px !important; }
-            .meta-row { font-size: 10.5px !important; margin-bottom: 1px !important; }
+            .address-block {
+              font-size: 10.5px !important;
+            }
+            .address-title {
+              font-size: 9.5px !important;
+              margin-bottom: 2px !important;
+            }
+            .meta-row {
+              font-size: 10.5px !important;
+              margin-bottom: 1px !important;
+            }
             
             input, textarea, select { 
               border: none !important; 
@@ -707,45 +702,31 @@ export default function App() {
               margin: 0 !important;
               box-shadow: none !important;
               resize: none;
-              color: black !important;
+              color: black;
               appearance: none;
               -webkit-appearance: none;
-              font-weight: inherit !important;
             }
             input::placeholder, textarea::placeholder { color: transparent !important; }
-            
-            input[type=number]::-webkit-inner-spin-button, 
-            input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
-            input[type=number] { -moz-appearance: textfield; }
 
             .table-container {
               margin-top: 6px !important;
               margin-bottom: 6px !important;
             }
-            
             th { 
-              border-bottom: 2px solid #000 !important; 
-              border-top: 2px solid #000 !important; 
-              background: transparent !important; 
-              color: black !important; 
-              padding: 8px 4px !important; 
-              font-size: 14.5px !important; 
-              font-weight: 800 !important;
+              border-bottom: 1.5px solid #000; 
+              border-top: 1.5px solid #000; 
+              background: transparent; 
+              color: black; 
+              padding: 4px 3px !important; 
+              font-size: 9.5px !important;
             }
             td { 
-              border-bottom: 1px dashed #ccc !important; 
-              padding: 8px 4px !important; 
-              font-size: 15.5px !important; 
-              color: black !important;
-              line-height: 1.3 !important;
-            }
-            table input {
-              font-size: 15.5px !important;
-              color: black !important;
+              border-bottom: 1px dashed #ccc; 
+              padding: 4px 3px !important; 
+              font-size: 10px !important;
             }
             
             .bottom-section {
-              grid-template-columns: 1fr 1fr 0.8fr !important;
               gap: 16px !important;
               margin-top: 8px !important;
               padding-top: 8px !important;
@@ -761,23 +742,36 @@ export default function App() {
               background: transparent; 
               padding: 6px 8px !important; 
             }
-            .bank-info-header { margin-bottom: 3px !important; padding-bottom: 1px !important; }
-            .bank-info-title { color: black; font-size: 9.5px !important; }
+            .bank-info-header {
+              margin-bottom: 3px !important;
+              padding-bottom: 1px !important;
+            }
+            .bank-info-title { 
+              color: black; 
+              font-size: 9.5px !important;
+            }
             .bank-grid-header { 
               border-bottom: 1px solid #000; 
               color: black; 
-              grid-template-columns: 80px 1fr;
+              grid-template-columns: 85px 1fr;
               font-size: 9px !important;
               margin-bottom: 2px !important;
               padding-bottom: 1px !important;
             }
-            .bank-row-item { grid-template-columns: 80px 1fr; margin-bottom: 1px !important; }
-            .bank-row-item input { font-size: 10px !important; }
-            
-            .notes-column-box { border: none !important; background: transparent !important; }
-            
-            .signature-box { min-height: 120px !important; }
-            .signature-image-container { height: 95px !important; margin: 1px 0 !important; }
+            .bank-row-item {
+              grid-template-columns: 85px 1fr;
+              margin-bottom: 1px !important;
+            }
+            .bank-row-item input {
+              font-size: 10px !important;
+            }
+            .signature-box {
+              min-height: 120px !important;
+            }
+            .signature-image-container {
+              height: 120px !important;
+              margin: 1px 0 !important;
+            }
             
             .print-hide { display: none !important; }
             .print-show { display: inline-block !important; }
@@ -787,10 +781,16 @@ export default function App() {
               top: 52% !important;
               width: 220px !important;
               height: 90px !important;
+              -webkit-print-color-adjust: exact;
+              print-color-adjust: exact;
             }
-            .watermark-stamp-title { font-size: 38px !important; }
+            .watermark-stamp-title {
+              font-size: 38px !important;
+            }
             
-            .col-act, td:last-child { display: none !important; }
+            .col-act, td:last-child {
+              display: none !important;
+            }
           }
           .print-show { display: none; }
         `}
@@ -841,8 +841,11 @@ export default function App() {
                 className="logo-preview"
                 onError={(e) => {
                   e.target.style.display = 'none';
+                  const fallback = document.getElementById('logo-fallback-text');
+                  if (fallback) fallback.style.display = 'block';
                 }}
               />
+
               <div className="no-print" style={{ marginTop: '5px' }}>
                 <label className="upload-label">
                   <Upload size={14} /> Ganti Logo Manually
@@ -854,6 +857,7 @@ export default function App() {
             <div className="invoice-header-info">
               <div className="invoice-title">Invoice</div>
               <div className="invoice-subtitle">(Asli untuk Penerima / Original for Recipient)</div>
+
               <div className="no-print" style={{ marginTop: '8px', fontSize: '12px' }}>
                 Status Dokumen: {isPaid ? (
                   <span style={{ color: '#10b981', fontWeight: 'bold', background: '#d1fae5', padding: '2px 8px', borderRadius: '4px' }}>LUNAS</span>
@@ -885,14 +889,27 @@ export default function App() {
                 rows="3"
                 style={{ fontWeight: '500' }}
               ></textarea>
+
               <div style={{ marginTop: '5px' }}>
                 <div className="meta-row">
                   <span className="meta-label">No. Telepon:</span>
-                  <input type="text" name="sellerPhone" value={invoiceData.sellerPhone} onChange={handleInvoiceChange} />
+                  <input
+                    type="text"
+                    name="sellerPhone"
+                    value={invoiceData.sellerPhone}
+                    onChange={handleInvoiceChange}
+                    placeholder="No. Telpon Penjual"
+                  />
                 </div>
                 <div className="meta-row">
                   <span className="meta-label">Email:</span>
-                  <input type="email" name="sellerEmail" value={invoiceData.sellerEmail} onChange={handleInvoiceChange} />
+                  <input
+                    type="email"
+                    name="sellerEmail"
+                    value={invoiceData.sellerEmail}
+                    onChange={handleInvoiceChange}
+                    placeholder="Email Penjual"
+                  />
                 </div>
               </div>
             </div>
@@ -917,33 +934,67 @@ export default function App() {
               ></textarea>
               <div className="meta-row">
                 <span className="meta-label">No. Telepon:</span>
-                <input type="text" name="billingPhone" value={invoiceData.billingPhone} onChange={handleInvoiceChange} />
+                <input
+                  type="text"
+                  name="billingPhone"
+                  value={invoiceData.billingPhone}
+                  onChange={handleInvoiceChange}
+                  placeholder="Telepon Klien"
+                />
               </div>
             </div>
 
             {/* Kolom 3: Detail Faktur & Pemesanan */}
             <div className="address-block" style={{ borderLeft: '1px solid #e5e7eb', paddingLeft: '15px' }}>
               <div className="address-title">Detail Faktur & Pemesanan :</div>
+
               <div className="meta-row">
                 <span className="meta-label">No. Faktur:</span>
-                <input type="text" name="invoiceNumber" value={invoiceData.invoiceNumber} onChange={handleInvoiceChange} style={{ fontWeight: 'bold' }} />
+                <input
+                  type="text"
+                  name="invoiceNumber"
+                  value={invoiceData.invoiceNumber}
+                  onChange={handleInvoiceChange}
+                  style={{ fontWeight: 'bold' }}
+                />
               </div>
               <div className="meta-row">
                 <span className="meta-label">Tanggal Faktur:</span>
-                <input type="date" name="date" value={invoiceData.date} onChange={handleInvoiceChange} />
+                <input
+                  type="date"
+                  name="date"
+                  value={invoiceData.date}
+                  onChange={handleInvoiceChange}
+                />
               </div>
               <div className="meta-row">
                 <span className="meta-label">Jatuh Tempo:</span>
-                <input type="date" name="dueDate" value={invoiceData.dueDate} onChange={handleInvoiceChange} />
+                <input
+                  type="date"
+                  name="dueDate"
+                  value={invoiceData.dueDate}
+                  onChange={handleInvoiceChange}
+                />
               </div>
+
               <div style={{ marginTop: '8px', borderTop: '1px dashed #d1d5db', paddingTop: '8px' }}>
                 <div className="meta-row">
                   <span className="meta-label">No. PO / Pesanan:</span>
-                  <input type="text" name="orderNumber" value={invoiceData.orderNumber} onChange={handleInvoiceChange} />
+                  <input
+                    type="text"
+                    name="orderNumber"
+                    value={invoiceData.orderNumber}
+                    onChange={handleInvoiceChange}
+                  />
                 </div>
                 <div className="meta-row">
                   <span className="meta-label">Tanggal Pesanan:</span>
-                  <input type="date" name="orderDate" value={invoiceData.orderDate} onChange={handleInvoiceChange} />
+                  <input
+                    type="date"
+                    name="orderDate"
+                    value={invoiceData.orderDate}
+                    onChange={handleInvoiceChange}
+                  />
                 </div>
               </div>
             </div>
@@ -968,11 +1019,11 @@ export default function App() {
               <tbody>
                 {calculatedItems.map((item, index) => (
                   <tr key={item.id}>
-                    <td className="cell-center">{index + 1}</td>
+                    <td className="cell-center" style={{ paddingTop: '12px' }}>{index + 1}</td>
                     <td>
                       <input
                         type="text"
-                        style={{ fontWeight: 'bold', textTransform: 'capitalize' }}
+                        style={{ fontWeight: 'bold', fontSize: '11.5px' }}
                         value={item.name}
                         onChange={(e) => handleItemChange(item.id, 'name', e.target.value)}
                         placeholder="Nama Produk/Jasa"
@@ -986,7 +1037,7 @@ export default function App() {
                         value={item.price}
                         onChange={(e) => handleItemChange(item.id, 'price', parseFloat(e.target.value) || 0)}
                       />
-                      <span className="print-show text-right" style={{ display: 'block' }}>
+                      <span className="print-show text-right" style={{ display: 'block', marginTop: '4px' }}>
                         {formatIDR(item.price)}
                       </span>
                     </td>
@@ -999,7 +1050,7 @@ export default function App() {
                         onChange={(e) => handleItemChange(item.id, 'quantity', parseFloat(e.target.value) || 0)}
                       />
                     </td>
-                    <td className="col-net">
+                    <td className="col-net" style={{ paddingTop: '12px' }}>
                       {formatIDR(item.netAmount)}
                     </td>
                     <td className="col-trate">
@@ -1011,27 +1062,31 @@ export default function App() {
                         value={item.taxRate}
                         onChange={(e) => handleItemChange(item.id, 'taxRate', parseFloat(e.target.value) || 0)}
                       />
-                      <span className="print-show text-center" style={{ display: 'block' }}>
+                      <span className="print-show text-center" style={{ display: 'block', marginTop: '4px' }}>
                         {item.taxRate}%
                       </span>
                     </td>
-                    <td className="col-tamount">
+                    <td className="col-tamount" style={{ paddingTop: '12px' }}>
                       {formatIDR(item.taxAmount)}
                     </td>
-                    <td className="col-total">
+                    <td className="col-total" style={{ paddingTop: '12px' }}>
                       {formatIDR(item.totalAmount)}
                     </td>
-                    <td className="col-act no-print">
-                      <button onClick={() => removeItem(item.id)} className="btn btn-icon" title="Hapus">
+                    <td className="col-act no-print" style={{ paddingTop: '8px' }}>
+                      <button
+                        onClick={() => removeItem(item.id)}
+                        className="btn btn-icon"
+                        title="Hapus"
+                      >
                         <Trash2 size={15} />
                       </button>
                     </td>
                   </tr>
                 ))}
 
-                {/* Baris Total */}
-                <tr style={{ fontWeight: 'bold', borderTop: '2px solid #111827', fontSize: '16px', background: '#f9fafb' }}>
-                  <td colSpan="2" className="cell-center" style={{ padding: '12px 0', textTransform: 'uppercase', letterSpacing: '0.5px' }}>SUBTOTAL BIAYA:</td>
+                {/* Baris Total di dalam tabel */}
+                <tr style={{ fontWeight: 'bold', borderTop: '1.5px solid #111827' }}>
+                  <td colSpan="2" className="cell-center" style={{ padding: '6px 0' }}>SUBTOTAL:</td>
                   <td></td>
                   <td className="cell-center">{items.reduce((acc, i) => acc + i.quantity, 0)}</td>
                   <td className="cell-right">{formatIDR(totalNet)}</td>
@@ -1041,44 +1096,43 @@ export default function App() {
                   <td className="no-print"></td>
                 </tr>
 
-                <tr style={{ fontWeight: 'bold', fontSize: '16px' }}>
-                  <td colSpan="2" className="cell-center" style={{ padding: '10px 0', color: '#ef4444', textTransform: 'uppercase' }}>POTONGAN DISKON (Rp):</td>
-                  <td colSpan="3" style={{ padding: '10px 0' }}>
+                <tr style={{ fontWeight: 'bold' }}>
+                  <td colSpan="2" className="cell-center" style={{ padding: '4px 0', color: '#ef4444' }}>DISKON (Nominal Rp):</td>
+                  <td colSpan="3" style={{ padding: '4px 0' }}>
                     <input
                       type="number"
                       min="0"
                       className="text-right print-hide"
                       value={discountValue || ''}
                       onChange={(e) => setDiscountValue(parseFloat(e.target.value) || 0)}
-                      style={{ width: '160px', padding: '6px 8px', margin: 0, border: '2px dashed #ef4444', color: '#ef4444', fontWeight: 'bold', float: 'right', marginRight: '4px', fontSize: '15px !important' }}
+                      style={{ width: '130px', padding: '2px 4px', margin: 0, border: '1px dashed #ef4444', color: '#ef4444', fontWeight: 'bold', fontSize: '11px', float: 'right', marginRight: '4px' }}
                       placeholder="Rp 0"
                     />
                     <span className="print-show" style={{ color: '#ef4444', float: 'right', marginRight: '4px' }}>-{formatIDR(discountValue)}</span>
                   </td>
                   <td colSpan="2"></td>
-                  <td className="cell-right" style={{ padding: '10px 0', color: '#ef4444' }}>-{formatIDR(discountValue)}</td>
+                  <td className="cell-right" style={{ padding: '4px 0', color: '#ef4444' }}>-{formatIDR(discountValue)}</td>
                   <td className="no-print"></td>
                 </tr>
 
-                <tr style={{ fontWeight: '900', borderBottom: '2px solid #111827', background: '#f0fdfa', fontSize: '18px' }}>
-                  <td colSpan="2" className="cell-center" style={{ padding: '15px 0', color: '#0d9488', textTransform: 'uppercase', letterSpacing: '1px' }}>TOTAL AKHIR PEMBAYARAN:</td>
+                <tr style={{ fontWeight: 'bold', borderBottom: '1.5px solid #111827', background: '#f9fafb' }}>
+                  <td colSpan="2" className="cell-center" style={{ padding: '8px 0', color: '#0d9488' }}>TOTAL AKHIR:</td>
                   <td colSpan="5"></td>
-                  <td className="cell-right" style={{ color: '#0d9488', fontWeight: '900', padding: '15px 0' }}>{formatIDR(grandTotal)}</td>
+                  <td className="cell-right" style={{ color: '#0d9488', fontSize: '13px', padding: '8px 0' }}>{formatIDR(grandTotal)}</td>
                   <td className="no-print"></td>
                 </tr>
               </tbody>
             </table>
 
             <button onClick={addItem} className="btn btn-text no-print" style={{ marginTop: '8px' }}>
-              <Plus size={14} /> Tambah Baris Transaksi Baru
+              <Plus size={14} /> Tambah Baris Transaksi
             </button>
           </div>
 
-          {/* Bagian Bawah (PERBAIKAN TATA LETAK 3 KOLOM BERDAMPINGAN) */}
+          {/* Bagian Bawah */}
           <div className="bottom-section">
-
-            {/* Kolom 1: Terbilang & Informasi Bank */}
             <div>
+              {/* Box Terbilang */}
               <div className="amount-words-box">
                 <div style={{ fontWeight: 'bold', fontSize: '9.5px', marginBottom: '3px', textTransform: 'uppercase', color: '#4b5563' }}>
                   Terbilang (Amount in Words):
@@ -1088,24 +1142,26 @@ export default function App() {
                 </div>
               </div>
 
+              {/* Box Informasi Bank */}
               <div className="bank-info-box">
                 <div className="bank-info-header">
                   <div className="bank-info-title">
-                    <Building2 size={13} /> Metode Transfer Bank:
+                    <Building2 size={13} /> Metode Pembayaran (Transfer Bank):
                   </div>
                   <button onClick={addBank} className="btn btn-text no-print" style={{ padding: '1px 5px', fontSize: '10.5px' }}>
-                    + Bank
+                    + Tambah Bank
                   </button>
                 </div>
 
-                <div className="meta-row" style={{ marginBottom: '6px', borderBottom: '1px dashed #99f6e4', paddingBottom: '4px' }}>
-                  <span style={{ width: '100px', fontWeight: 'bold', color: '#0f766e' }}>A.N :</span>
+                <div className="meta-row" style={{ marginBottom: '8px', borderBottom: '1px dashed #99f6e4', paddingBottom: '6px' }}>
+                  <span style={{ width: '120px', fontWeight: 'bold', color: '#0f766e' }}>Atas Nama (A.N) :</span>
                   <input
                     type="text"
                     name="bankAccountName"
                     value={invoiceData.bankAccountName}
                     onChange={handleInvoiceChange}
-                    style={{ background: 'transparent', border: 'none', margin: 0, padding: 0, fontWeight: 'bold', color: '#111827', fontSize: '11.5px' }}
+                    style={{ background: 'transparent', border: 'none', margin: 0, padding: 0, fontWeight: 'bold', color: '#111827', fontSize: '12px' }}
+                    placeholder="Nama Pemilik Rekening"
                   />
                 </div>
 
@@ -1118,14 +1174,31 @@ export default function App() {
                 {bankAccounts.map((acc) => (
                   <div key={acc.id} className="bank-row-item">
                     <div>
-                      <input type="text" value={acc.bankName} onChange={(e) => handleBankChange(acc.id, 'bankName', e.target.value)} style={{ fontWeight: 'bold', color: '#0f766e' }} />
+                      <input
+                        type="text"
+                        value={acc.bankName}
+                        onChange={(e) => handleBankChange(acc.id, 'bankName', e.target.value)}
+                        placeholder="Nama Bank"
+                        style={{ fontWeight: 'bold', color: '#0f766e' }}
+                      />
                     </div>
                     <div>
-                      <input type="text" value={acc.accountNo} onChange={(e) => handleBankChange(acc.id, 'accountNo', e.target.value)} style={{ fontWeight: '600' }} />
+                      <input
+                        type="text"
+                        value={acc.accountNo}
+                        onChange={(e) => handleBankChange(acc.id, 'accountNo', e.target.value)}
+                        placeholder="Nomor Rekening"
+                        style={{ fontWeight: '600' }}
+                      />
                     </div>
                     <div className="no-print" style={{ textAlign: 'center' }}>
-                      <button onClick={() => removeBank(acc.id)} className="btn-icon-small" title="Hapus Rekening" style={{ border: 'none', cursor: 'pointer' }}>
-                        <Trash2 size={12} />
+                      <button
+                        onClick={() => removeBank(acc.id)}
+                        className="btn-icon-small"
+                        title="Hapus Rekening"
+                        style={{ border: 'none', cursor: 'pointer' }}
+                      >
+                        <Trash2 size={13} />
                       </button>
                     </div>
                   </div>
@@ -1133,30 +1206,24 @@ export default function App() {
               </div>
             </div>
 
-            {/* Kolom 2: Syarat & Ketentuan Pembayaran (BERDAMPINGAN DENGAN BANK) */}
-            <div className="notes-column-box">
-              <strong style={{ fontSize: '11px', textTransform: 'uppercase', color: '#374151', letterSpacing: '0.3px' }}>
-                Syarat & Ketentuan Pembayaran:
-              </strong>
-              <textarea
-                name="notes"
-                value={invoiceData.notes}
-                onChange={handleInvoiceChange}
-                rows="6"
-                style={{ marginTop: '5px', width: '100%', height: '115px' }}
-                placeholder="Tulis Syarat Pembayaran..."
-              ></textarea>
-            </div>
-
-            {/* Kolom 3: Box Tanda Tangan */}
+            {/* Box Tanda Tangan */}
             <div className="signature-box">
               <div>
                 <span style={{ fontSize: '11px' }}>Hormat Kami,</span>
-                <div style={{ fontWeight: 'bold', marginTop: '2px', color: '#0d9488', fontSize: '11.5px' }}>{invoiceData.sellerName || 'CV ACS MULTI TECHNOLOGY'}</div>
+                <div style={{ fontWeight: 'bold', marginTop: '3px', color: '#0d9488' }}>{invoiceData.sellerName || 'CV ACS MULTI TECHNOLOGY'}</div>
               </div>
 
               <div className="signature-image-container">
-                <img src="/ttd.png" alt="Tanda Tangan Mohammad Munir" className="signature-graphic-file" />
+                <img
+                  src="../public/ttd.png"
+                  alt="Tanda Tangan Mohammad Munir"
+                  className="signature-graphic-file"
+                  onError={(e) => {
+                    e.target.style.display = 'none';
+                    const fallbackSvg = document.getElementById('signature-fallback-svg');
+                    if (fallbackSvg) fallbackSvg.style.display = 'block';
+                  }}
+                />
               </div>
 
               <div>
@@ -1165,7 +1232,18 @@ export default function App() {
                 </div>
               </div>
             </div>
+          </div>
 
+          {/* Notes Catatan */}
+          <div style={{ marginTop: '20px', fontSize: '10.5px', borderTop: '1px solid #e5e7eb', paddingTop: '10px' }}>
+            <strong>Syarat & Ketentuan Pembayaran:</strong>
+            <textarea
+              name="notes"
+              value={invoiceData.notes}
+              onChange={handleInvoiceChange}
+              rows="2"
+              style={{ marginTop: '4px' }}
+            ></textarea>
           </div>
         </div>
 
@@ -1175,23 +1253,33 @@ export default function App() {
             <h3 style={{ fontSize: '15px', fontWeight: 'bold', marginBottom: '12px', borderBottom: '1px solid #e5e7eb', paddingBottom: '8px', color: '#0d9488' }}>
               Aksi & Pengaturan
             </h3>
+
             <button onClick={() => setShowPrintModal(true)} className="btn btn-primary" style={{ marginBottom: '15px' }}>
               <Printer size={18} /> Cetak / Simpan PDF
             </button>
+
             <div style={{ fontSize: '11.5px', color: '#4b5563', lineHeight: '1.45' }}>
               <div className="control-group" style={{ marginBottom: '15px' }}>
                 <label style={{ fontWeight: 'bold', display: 'block', marginBottom: '5px' }}>Potongan Diskon (Rp)</label>
                 <div style={{ position: 'relative' }}>
-                  <input type="number" min="0" value={discountValue} onChange={(e) => setDiscountValue(parseFloat(e.target.value) || 0)} style={{ paddingRight: '35px', border: '1px solid #d1d5db', background: 'white' }} />
+                  <input
+                    type="number"
+                    min="0"
+                    value={discountValue}
+                    onChange={(e) => setDiscountValue(parseFloat(e.target.value) || 0)}
+                    style={{ paddingRight: '35px', border: '1px solid #d1d5db', background: 'white' }}
+                  />
                   <span style={{ position: 'absolute', right: '10px', top: '6px', color: '#6b7280', fontSize: '12px', fontWeight: 'bold' }}>Rp</span>
                 </div>
               </div>
+
               <p><strong>Informasi Cetak:</strong></p>
               <ul style={{ paddingLeft: '12px', marginTop: '4px', marginBottom: '12px' }}>
                 <li>Faktur didesain otomatis dalam posisi <strong>Landscape (Tidur)</strong>.</li>
                 <li>Ukuran kertas direkomendasikan <strong>A4</strong>.</li>
-                <li>Menghasilkan format **1 halaman penuh** yang super ringkas dan padat.</li>
+                <li>Menghasilkan format **1 halaman penuh** tanpa terpotong.</li>
               </ul>
+
               <p><strong>Rincian Rekening:</strong></p>
               <ul style={{ paddingLeft: '12px', marginTop: '4px', marginBottom: '10px' }}>
                 <li><strong>BRI:</strong> 612001021425536</li>
